@@ -10,7 +10,7 @@ import android.widget.Button;
 import com.example.myapplication.R;
 
 public class MainActivity extends AppCompatActivity {
-    //branch 예제
+    //branch
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
