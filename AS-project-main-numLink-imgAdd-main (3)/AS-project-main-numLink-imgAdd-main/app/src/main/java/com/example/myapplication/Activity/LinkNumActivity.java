@@ -9,11 +9,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +32,6 @@ import java.util.ArrayList;
 public class LinkNumActivity extends AppCompatActivity {
 
     private static final int READ_CONTACTS_PERMISSION_REQUEST = 1;
-    private static final int REQUEST_CALL_PERMISSION = 1;
 
     private ListView listView;
     private ArrayList<String> contactList = new ArrayList<>();
@@ -37,9 +40,10 @@ public class LinkNumActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_num);
-
         listView = findViewById(R.id.list_items);
 
+
+        /**
         Button mainButton = findViewById(R.id.mainbut);
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +52,7 @@ public class LinkNumActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        **/
         // READ_CONTACTS 권한 확인
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -101,23 +105,8 @@ public class LinkNumActivity extends AppCompatActivity {
         }
 
         // 연락처를 리스트뷰에 표시
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, contactList);
+        MyAdapter adapter = new MyAdapter();
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // 클릭된 아이템의 내용 가져오기
-                String selectedItem = (String) parent.getItemAtPosition(position);
-
-                // 여기에 클릭 시 수행할 작업을 추가
-                // 예: 토스트 메시지 표시
-                Toast.makeText(LinkNumActivity.this, "Clicked: " + selectedItem, Toast.LENGTH_SHORT).show();
-
-                // 전화 다이얼 화면 띄우기
-                dialPhoneNumber(selectedItem);
-            }
-        });
     }
 
     private void dialPhoneNumber(String selectedItem) {
@@ -128,5 +117,60 @@ public class LinkNumActivity extends AppCompatActivity {
         Intent dialIntent = new Intent(Intent.ACTION_DIAL);
         dialIntent.setData(Uri.parse("tel:" + phoneNumber));
         startActivity(dialIntent);
+    }
+
+    private class MyAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            // 연락처 리스트 크기 반환
+            return contactList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            // 해당 위치의 아이템 반환
+            return contactList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // 아이템의 ID 반환
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater inflater = LayoutInflater.from(LinkNumActivity.this);
+                view = inflater.inflate(R.layout.list_item, parent, false);
+            }
+
+            TextView textView = view.findViewById(R.id.textView);
+            Button button1 = view.findViewById(R.id.button1);
+            Button button2 = view.findViewById(R.id.button2);
+
+            String contactInfo = getItem(position).toString();
+            textView.setText(contactInfo);
+
+            button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 버튼1 클릭 시 수행할 동작
+                    Toast.makeText(LinkNumActivity.this, "Button 1 Clicked: " + contactInfo, Toast.LENGTH_SHORT).show();
+                    dialPhoneNumber(contactInfo);
+                }
+            });
+
+            button2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 버튼2 클릭 시 수행할 동작
+                    Toast.makeText(LinkNumActivity.this, "Button 2 Clicked: " + contactInfo, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            return view;
+        }
     }
 }
