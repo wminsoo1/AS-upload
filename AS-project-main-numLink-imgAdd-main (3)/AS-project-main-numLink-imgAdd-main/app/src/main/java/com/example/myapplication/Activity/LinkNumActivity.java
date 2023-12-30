@@ -114,29 +114,19 @@ public class LinkNumActivity extends AppCompatActivity {
                 // 예: 토스트 메시지 표시
                 Toast.makeText(LinkNumActivity.this, "Clicked: " + selectedItem, Toast.LENGTH_SHORT).show();
 
-                // 전화 걸기
-                makePhoneCall(selectedItem);
+                // 전화 다이얼 화면 띄우기
+                dialPhoneNumber(selectedItem);
             }
         });
     }
 
-    private void makePhoneCall(String selectedItem) {
+    private void dialPhoneNumber(String selectedItem) {
         // 전화 번호 추출
         String[] parts = selectedItem.split(":");
         String phoneNumber = parts[1].trim();
 
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + phoneNumber));
-
-        // 전화 걸기 권한 확인
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-                == PackageManager.PERMISSION_GRANTED) {
-            startActivity(callIntent);
-        } else {
-            // 권한이 없을 경우 권한 요청
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CALL_PHONE},
-                    REQUEST_CALL_PERMISSION);
-        }
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+        dialIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(dialIntent);
     }
 }
